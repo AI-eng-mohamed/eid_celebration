@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تهنئة العيد للأصدقاء الغوالي - النسخة النهائية المستقرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00ffcc;
+            --bg-gradient: linear-gradient(135deg, #141e30, #243b55);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background: var(--bg-gradient);
+            font-family: 'Cairo', sans-serif; color: #fff;
+            display: flex; justify-content: center; align-items: center;
+            perspective: 1500px; 
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            transition: background 0.8s ease;
+        }
+
+        /* الكانفاس شفاف تماماً ولا يصنع أي سواد */
+        canvas { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 1; pointer-events: none; 
+        }
+
+        .card-container {
+            width: 90%; max-width: 420px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 35px 25px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5); z-index: 2;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+        }
+
+        .card-container.immersed {
+            transform: translateZ(-300px) translateY(10px) scale(0.8);
+            background: rgba(0, 0, 0, 0.85); border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-box { font-size: 65px; margin-bottom: 5px; animation: float 3s ease-in-out infinite; }
+        h1 { font-family: 'Reem Kufi', sans-serif; color: var(--primary-color); font-size: 2.1rem; margin: 10px 0; }
+        .message-text { font-size: 1.15rem; line-height: 1.7; margin: 15px 0; color: #e0e0e0; }
+        .highlight-box { background: rgba(0, 255, 204, 0.1); border: 1px solid rgba(0, 255, 204, 0.2); padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 20px; color: #fff; }
+        
+        .audio-btns-group {
+            display: flex; flex-direction: column; gap: 12px; width: 100%; align-items: center;
+        }
+
+        .audio-btn {
+            width: 85%; padding: 12px 20px;
+            font-family: 'Cairo', sans-serif; font-size: 0.95rem; font-weight: bold;
+            border: none; border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        
+        .islamic-btn { background: #ffffff; color: #000; }
+        .islamic-btn:hover { transform: scale(1.05); background: var(--primary-color); }
+
+        .non-islamic-btn { background: linear-gradient(45deg, #ff007f, #7f00ff); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .non-islamic-btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 0, 127, 0.8); }
+
+        .controls-wrapper { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+        .action-btn { background: none; border: none; color: var(--primary-color); font-family: 'Cairo', sans-serif; font-size: 0.95rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: underline; }
+
+        #exitBtn {
+            display: none; position: absolute; top: 25px; right: 25px;
+            background: #ffffff; color: #000; border: none; padding: 10px 22px;
+            font-family: 'Cairo', sans-serif; font-weight: bold; border-radius: 30px;
+            cursor: pointer; z-index: 10; box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        .eidiya-card-details { display: none; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px; margin-top: 15px; width: 100%; box-sizing: border-box; }
+        .card-number-box { background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 6px; font-family: monospace; font-size: 1.2rem; letter-spacing: 2px; margin: 8px 0; color: #00ffcc; }
+        .copy-btn { background: var(--primary-color); color: #000; border: none; padding: 6px 15px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.85rem; border-radius: 4px; cursor: pointer; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    </style>
+</head>
+<body>
+
+    <audio id="eidTakbeer" src="takbeer.mp3" loop style="display:none;"></audio>
+    <audio id="eidLetsEnjoy" src="lets_enjoy.mp3" loop style="display:none;"></audio>
+    
+    <button id="exitBtn" onclick="stopImmersion()">الرجوع للوضع الطبيعي ↩️</button>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="card-container" id="card">
+        <div class="icon-box" id="mainIcon">🌙</div>
+        <h1 id="mainTitle">عيد مبارك </h1>
+        <div class="message-text" id="mainMsg">كل عام وأنتم بألف خير وصحة وسلامة، أعاده الله عليكم بالخير والبركات.</div>
+        <div class="highlight-box" id="mainWish">نسال الله ان يجعل ايامكم كلها فرح ويتغمدها السرور</div>
+        
+        <div class="audio-btns-group">
+            <button class="audio-btn islamic-btn" id="playIslamicBtn" onclick="toggleAudio('islamic')">
+                <span>شغل أجواء العيد 🎧🕋</span>
+            </button>
+            <button class="audio-btn non-islamic-btn" id="playNonIslamicBtn" onclick="toggleAudio('non-islamic')">
+                <span>ابدأ العيد المو إسلامي 🕺🔥</span>
+            </button>
+        </div>
+
+        <div class="controls-wrapper">
+            <button class="action-btn" id="immerseToggle" onclick="startImmersion()">
+                <span>اضغط هنا 🕋✨</span>
+            </button>
+            <button class="action-btn" onclick="toggleEidiyaBox()">
+                <span>دز العيدية أونلاين؟ 💸😉</span>
+            </button>
+        </div>
+
+        <div class="eidiya-card-details" id="eidiyaBox">
+            <p style="margin: 0; font-size: 0.85rem; color: #ccc;">رقم الحساب لنسخ العيدية مباشرة:</p>
+            <div class="card-number-box" id="cardNumber">1234567890</div>
+            <button class="copy-btn" onclick="copyCardNumber()">نسخ رقم الحساب 📋</button>
+            <p id="copyStatus" style="margin: 5px 0 0 0; font-size: 0.8rem; color: #00ffcc; display: none;">تم النسخ بنجاح! كثر الله خيرك تسلم 🤍</p>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userKey = urlParams.get('to');
+
+        const themesData = {
+            'bahjat': { title: "عيدك مبارك ابو فطومة", icon: "✨", msg: "عيدك مبارك اخوية كل سنة وانت طيب ينعاد عليك بالصحة و العافية اسال الله ان يوفقنا بمسيرتنا الجهادية الثورية وتتحقق ونهجم البلد .", wish: "ان شاء الله سنة نجاح وتحقيق لكل أمانيك الكبيرة 🚀", bg: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)", color: "#00ffff" },
+            'basim': { title: "عيدك مبارك ابو معصورة", icon: "💎", msg: "عيدك مبارك اخوية كل سنة وانت طيب وينعاد عليك بالعوافي والتبريكات.", wish: "ربي يرزقك فرحة وسعادة ما تفارق أيامك أبداً 🌟", bg: "linear-gradient(135deg, #1f4037, #99f2c8)", color: "#20bf6b" },
+            'husam': { title: "عيدك مبارك ابو حميد", icon: "⚽", msg: "كل عام وأنت بالف خير ، رفيق الدرب والضحكات الصافية. ربي يحفظك ويوفقك بكل خطوة بحياتك يا بطل.", wish: "أحلى عيد يا غالي وأحلى صحبة وياك دائماً ودامت لمتنا 🎉", bg: "linear-gradient(135deg, #141e30, #243b55)", color: "#ff9f43" },
+            'adnan': { title: "عيدك مبارك وليدييي", icon: "🎯", msg: "كل عام وأنت بألف خير يوم النشوفك بطل بمسلسل . الصديق الطيب ابن الطيب، ربي يسعد قلبك ويحقق مرادك.", wish: "ان شاء الله أيامك كلها فرح، توفيق ونجاح مستمر 💫", bg: "linear-gradient(135deg, #3a7bd5, #3a6073)", color: "#00e676" },
+            'mahmoud': { title: "عيدك مبارك عمو حمد", icon: "🛡️", msg: "كل عام وأنت الخير ابن امي ، الله لا يفرقنا ويجمعنا دائماً على الخير.", wish: "يارب هالسنة تكون سنة السعادة والخير والفتح عليك 🤲✨", bg: "linear-gradient(135deg, #2c3e50, #bdc3c7)", color: "#f1c40f" },
+            'walid': { title: "عيدك مبارك عم أبو الوليد", icon: "🦁", msg: "كل عام وأنت بخير أبو الوليد الغالي . يا وجه الخير والبركة وأطيب قلب، ربي يطول بعمرك ويحفظك.", wish: "عساك من عواده وان شاء الله المعدل العالي 🌹", bg: "linear-gradient(135deg, #000000, #434343)", color: "#ffd700" }
+        };
+
+        let currentBg = "linear-gradient(135deg, #141e30, #243b55)";
+        if (userKey && themesData[userKey]) {
+            const current = themesData[userKey];
+            document.getElementById('mainTitle').innerText = current.title;
+            document.getElementById('mainIcon').innerText = current.icon;
+            document.getElementById('mainMsg').innerText = current.msg;
+            document.getElementById('mainWish').innerText = current.wish;
+            currentBg = current.bg;
+            document.documentElement.style.setProperty('--primary-color', current.color);
+        }
+        
+        document.body.style.background = currentBg;
+
+        let activeMode = null; 
+        let audioCtx = null;
+        const audioIslamic = document.getElementById('eidTakbeer');
+        const audioNonIslamic = document.getElementById('eidLetsEnjoy');
+        const btnIslamic = document.getElementById('playIslamicBtn');
+        const btnNonIslamic = document.getElementById('playNonIslamicBtn');
+
+        // تطبيق معدلات تسريع الصوت المفضلة لديك برمجياً هنا
+        audioIslamic.playbackRate = 1.15;      // تسريع التكبيرات قليلاً لتجنب البطء
+        audioNonIslamic.playbackRate = 1.30;   // تسريع الوضع الصاخب لزيادة الحماس والوناسة
+
+        function toggleAudio(mode) {
+            if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            if (activeMode === mode) {
+                stopAllAudio();
+                return;
+            }
+
+            stopAllAudio();
+            activeMode = mode;
+
+            if (mode === 'islamic') {
+                btnIslamic.innerHTML = "<span>إيقاف الأجواء 🔇</span>";
+                audioIslamic.play().catch(e => console.log("Audio bypass"));
+                for(let i=0; i<4; i++) fireworks.push(new Firework());
+            } else if (mode === 'non-islamic') {
+                // فصل كامل: إلغاء وضع الكعبة فوراً عند الانتقال للمو إسلامي لإرجاع الألوان المطلوبة
+                document.getElementById('card').classList.remove('immersed');
+                document.getElementById('exitBtn').style.display = 'none';
+                document.getElementById('immerseToggle').style.display = 'inline-flex';
+
+                btnNonIslamic.innerHTML = "<span>إيقاف إنجوي 🔇🕺</span>";
+                document.body.style.background = "linear-gradient(135deg, #f80759, #bc4e9c, #111111)"; 
+                audioNonIslamic.play().catch(e => console.log("Audio bypass"));
+                for(let i=0; i<25; i++) fireworks.push(new Firework());
+            }
+        }
+
+        function stopAllAudio() {
+            audioIslamic.pause();
+            audioNonIslamic.pause();
+            btnIslamic.innerHTML = "<span>شغل أجواء العيد 🎧🕋</span>";
+            btnNonIslamic.innerHTML = "<span>ابدأ العيد المو إسلامي 🕺🔥</span>";
+            document.body.style.background = currentBg; 
+            activeMode = null;
+        }
+
+        function startImmersion() {
+            document.getElementById('card').classList.add('immersed');
+            // إظهار الكعبة كخلفية للبودي فوراً وبدون شاشة سوداء
+            document.body.style.background = "linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('kaaba.jpg')";
+            document.getElementById('exitBtn').style.display = 'block';
+            document.getElementById('immerseToggle').style.display = 'none';
+            
+            // إذا لم يكن الصوت الإسلامي يعمل مسبقاً، نقوم بتشغيله بذكاء وبدون تداخلات
+            if(activeMode !== 'islamic') { 
+                toggleAudio('islamic'); 
+            }
+        }
+
+        function stopImmersion() {
+            document.getElementById('card').classList.remove('immersed');
+            document.getElementById('exitBtn').style.display = 'none';
+            document.getElementById('immerseToggle').style.display = 'inline-flex';
+            if(activeMode === 'islamic') { stopAllAudio(); }
+        }
+
+        function toggleEidiyaBox() {
+            const box = document.getElementById('eidiyaBox');
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function copyCardNumber() {
+            const num = document.getElementById('cardNumber').innerText;
+            navigator.clipboard.writeText(num.replace(/\s+/g, '')).then(() => {
+                const status = document.getElementById('copyStatus');
+                status.style.display = 'block';
+                setTimeout(() => { status.style.display = 'none'; }, 3000);
+            });
+        }
+
+        function playExplosionSound() {
+            if (!audioCtx || !activeMode) return;
+            try {
+                const bufferSize = audioCtx.sampleRate * 0.35;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+                const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass'; 
+                
+                filter.frequency.setValueAtTime(activeMode === 'non-islamic' ? 380 : 140, audioCtx.currentTime);
+                const gain = audioCtx.createGain(); 
+                gain.gain.setValueAtTime(activeMode === 'non-islamic' ? 0.04 : 0.015, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+                noise.start();
+            } catch(e){}
+        }
+
+        // --- محرك ألعاب نارية شفاف بالكامل ونظيف ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.radius = activeMode === 'non-islamic' ? (Math.random() * 3.5 + 1) : (Math.random() * 2 + 0.8);
+                const angle = Math.random() * Math.PI * 2;
+                const speed = activeMode === 'non-islamic' ? (Math.random() * 8 + 2) : (Math.random() * 4 + 1.5);
+                this.velocity = { x: Math.cos(angle) * speed, y: Math.sin(angle) * speed };
+                this.alpha = 1; 
+                this.decay = activeMode === 'non-islamic' ? (Math.random() * 0.008 + 0.005) : (Math.random() * 0.015 + 0.01);
+            }
+            draw() { 
+                ctx.save(); 
+                ctx.globalAlpha = this.alpha; 
+                ctx.beginPath(); 
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); 
+                ctx.fillStyle = this.color; 
+                if (activeMode === 'non-islamic' || Math.random() > 0.2) ctx.fill(); 
+                ctx.restore(); 
+            }
+            update() { 
+                this.velocity.y += activeMode === 'non-islamic' ? 0.05 : 0.03; 
+                this.x += this.velocity.x; 
+                this.y += this.velocity.y; 
+                this.alpha -= this.decay; 
+            }
+        }
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() * width; this.y = height;
+                this.targetY = activeMode === 'non-islamic' ? (Math.random() * (height * 0.6) + 30) : (Math.random() * (height * 0.4) + 80);
+                this.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
+                this.velocity = activeMode === 'non-islamic' ? (Math.random() * 5 + 8) : (Math.random() * 3 + 5); 
+                this.particles = []; this.exploded = false;
+            }
+            update() {
+                if (!this.exploded) { this.y -= this.velocity; if (this.y <= this.targetY) { this.exploded = true; this.explode(); } }
+                else { for (let i = this.particles.length - 1; i >= 0; i--) { this.particles[i].update(); if (this.particles[i].alpha <= 0) this.particles.splice(i, 1); } }
+            }
+            explode() { 
+                playExplosionSound(); 
+                const pCount = activeMode === 'non-islamic' ? 95 : 35; 
+                for (let i = 0; i < pCount; i++) this.particles.push(new Particle(this.x, this.y, this.color)); 
+            }
+            draw() { if (!this.exploded) { ctx.beginPath(); ctx.arc(this.x, this.y, activeMode === 'non-islamic' ? 3.5 : 2, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); } else { this.particles.forEach(p => p.draw()); } }
+        }
+
+        const fireworks = [];
+        function animate() {
+            // المسح الشفاف الشامل لمنع تراكم السواد تماماً بجميع الوضعيات والأحوال
+            ctx.clearRect(0, 0, width, height);
+
+            let spawnChance = activeMode === 'non-islamic' ? 0.28 : (activeMode === 'islamic' ? 0.04 : 0);
+            let maxFireworks = activeMode === 'non-islamic' ? 32 : 5;    
+            
+            if (activeMode && Math.random() < spawnChance && fireworks.length < maxFireworks) { fireworks.push(new Firework()); }
+            for (let i = fireworks.length - 1; i >= 0; i--) { fireworks[i].update(); fireworks[i].draw(); if (fireworks[i].exploded && fireworks[i].particles.length === 0) fireworks.splice(i, 1); }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
