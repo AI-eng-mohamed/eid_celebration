@@ -11,17 +11,27 @@
             --bg-gradient: linear-gradient(135deg, #141e30, #243b55);
         }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background: var(--bg-gradient);
-            font-family: 'Cairo', sans-serif; color: #fff;
-            display: flex; justify-content: center; align-items: center;
-            perspective: 1500px; 
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            transition: background 0.8s ease;
-        }
+      body, html {
+    margin: 0; padding: 0; width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--bg-gradient);
+    font-family: 'Cairo', sans-serif; color: #fff;
+    display: flex; justify-content: center; align-items: center;
+    perspective: 1500px; transition: background 0.8s ease;
+    box-sizing: border-box;
+}
+
+@media screen and (max-width: 480px) {
+    body, html {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        padding: 40px 0 !important;
+    }
+}
 
         /* الكانفاس شفاف تماماً ولا يصنع أي سواد */
         canvas { 
